@@ -1,3 +1,4 @@
+from email import parser
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
 import pandas as pd
@@ -66,3 +67,28 @@ class Users(Resource):
             }, 404
 
     def delete(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('userId', required = True)
+        args = parser.parse_args()
+
+        data = pd.read_csv('users.csv')
+
+        if args['userId'] in list(data['userId']):
+            data = data[data['userId'] != args['userId']]
+
+            data.to_csv('user.csv', index= False)
+
+            return {'data': data.to_dict()}, 200
+        else:
+            return{
+                'message': f"'{args['userId']}'user not found"
+            }, 404
+
+
+class Locations(Resource):
+    def get(self):
+        data = pd.read_csv('locations.csv')
+        return {'data': data.to_dict()}, 200
+
+    def post(self):
+        
