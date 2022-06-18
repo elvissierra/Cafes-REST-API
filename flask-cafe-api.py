@@ -9,9 +9,9 @@ api = Api(app)
 
 class Users(Resource):
     def get(self):
-        data = pd.read_csv("users.csv")
-        data = data.to_dict()
-        return {"data": data}, 200
+        data = pd.read_csv("users.csv") #reads the csv file
+        data = data.to_dict() #dataframe to dict
+        return {"data": data}, 200 #if everything processed OK
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -31,12 +31,12 @@ class Users(Resource):
                     "userId": [args["userId"]],
                     "name": [args["name"]],
                     "city": [args["city"]],
-                    "locations": [[]],
+                    "locations": [[]]
                 }
             )
 
             data = data.append(new_data, ignore_index=True)
-            data.to_csv("s", index=False)
+            data.to_csv("users.csv", index=False)
             return {"data": data.to_dict()}, 200
 
     def put(self):
@@ -52,11 +52,11 @@ class Users(Resource):
 
             user_data = data[data["userId"] == args["userId"]]
 
-            user_data["locations"] = (
-                user_data["locations"].values[0].append(args["location"])
-            )
+            user_data["locations"] = user_data["locations"].values[0] \
+                .append(args["location"])
+            
 
-            data.to_csv("s", index=False)
+            data.to_csv("users.csv", index=False)
 
             return {"data": data.to_dict()}, 200
 
@@ -73,7 +73,7 @@ class Users(Resource):
         if args["userId"] in list(data["userId"]):
             data = data[data["userId"] != args["userId"]]
 
-            data.to_csv("s", index=False)
+            data.to_csv("users.csv", index=False)
 
             return {"data": data.to_dict()}, 200
         else:
@@ -134,7 +134,7 @@ class Locations(Resource):
             return {"data": data.to_dict()}, 200
 
         else:
-            return {"message": f"'{args['locationId']}' location does not exist"}, 404
+            return {"message": f"'{args['locationId']}' location does not exist."}, 404
 
     def delete(self):
         parser = reqparse.RequestParser()
