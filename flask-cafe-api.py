@@ -1,4 +1,3 @@
-from email import parser
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
 import pandas as pd
@@ -10,7 +9,7 @@ api = Api(app)
 
 class Users(Resource):
     def get(self):
-        data = pd.read_csv("user.csv")
+        data = pd.read_csv("users.csv")
         data = data.to_dict()
         return {"data": data}, 200
 
@@ -21,7 +20,7 @@ class Users(Resource):
         parser.add_argument("city", required=True)
         args = parser.parse_args()
 
-        data = pd.read_csv("user.csv")
+        data = pd.read_csv("users.csv")
 
         if args["userId"] in list(data["userId"]):
             return {"message": f"'{args['userId']}' already exists."}, 409
@@ -37,7 +36,7 @@ class Users(Resource):
             )
 
             data = data.append(new_data, ignore_index=True)
-            data.to_csv("user.csv", index=False)
+            data.to_csv("s", index=False)
             return {"data": data.to_dict()}, 200
 
     def put(self):
@@ -57,7 +56,7 @@ class Users(Resource):
                 user_data["locations"].values[0].append(args["location"])
             )
 
-            data.to_csv("user.csv", index=False)
+            data.to_csv("s", index=False)
 
             return {"data": data.to_dict()}, 200
 
@@ -74,7 +73,7 @@ class Users(Resource):
         if args["userId"] in list(data["userId"]):
             data = data[data["userId"] != args["userId"]]
 
-            data.to_csv("user.csv", index=False)
+            data.to_csv("s", index=False)
 
             return {"data": data.to_dict()}, 200
         else:
@@ -95,7 +94,7 @@ class Locations(Resource):
 
         data = pd.read_csv("locations.csv")
 
-        if args["location"] in list(data["locationId"]):
+        if args["locationId"] in list(data["locationId"]):
 
             return {"message": f"'{args['locationId']}' already exists."}, 409
 
@@ -122,7 +121,7 @@ class Locations(Resource):
 
         data = pd.read_csv("locations.csv")
 
-        if args["location"] in list(data["locationId"]):
+        if args["locationId"] in list(data["locationId"]):
             user_data = data[data["locationId"] == args["locationId"]]
 
             if "name" in args:
@@ -131,7 +130,7 @@ class Locations(Resource):
                 user_data["rating"] = args["rating"]
 
             data[data["locationId"] == args["locationId"]] = user_data
-            data.to_csv("location.csv", index=False)
+            data.to_csv("locations.csv", index=False)
             return {"data": data.to_dict()}, 200
 
         else:
@@ -140,7 +139,7 @@ class Locations(Resource):
     def delete(self):
         parser = reqparse.RequestParser()
         parser.add_argument("locationId", required=True, type=int)
-        args = parser.parser.args()
+        args = parser.parser_args()
 
         data = pd.read_csv("locations.csv")
 
