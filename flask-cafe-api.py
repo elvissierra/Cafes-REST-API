@@ -3,6 +3,7 @@ from flask_restful import Resource, Api, reqparse
 import pandas as pd
 import ast
 
+
 app = Flask(__name__)
 api = Api(app)
 
@@ -19,7 +20,7 @@ class Users(Resource):
         parser.add_argument('city', required=True)
         args = parser.parse_args()
 
-        data = pd.read_csv('users.csv')
+        
 
         if args['userId'] in list(data['userId']):
             return {
@@ -32,6 +33,7 @@ class Users(Resource):
                 'city': [args['city']],
                 'locations': [[]]
             })
+            data = pd.read_csv('users.csv')
             data = data.append(new_data, ignore_index=True)
             data.to_csv('users.csv', index=False)
             return {'data': data.to_dict()}, 200
